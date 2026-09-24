@@ -15,10 +15,16 @@ console.log("MONGO_URI exists:", !!process.env.MONGO_URI);
 
 
 // Initialize Database Connection
+let initPromise = null;
 export const initDatabase = async () => {
-
-  await connectDB();
-  await seedSampleData();
+  if (initPromise) {
+    return initPromise;
+  }
+  initPromise = (async () => {
+    await connectDB();
+    await seedSampleData();
+  })();
+  return initPromise;
 };
 initDatabase();
 
@@ -47,6 +53,17 @@ app.use('/api/*', (req, res) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
+  if (
+    err.name === 'MongooseError' ||
+    err.name === 'MongoNetworkError' ||
+    (err.message && err.message.includes('buffering timed out'))
+  ) {
+    console.warn('[AI Studio] Database offline — returning mock empty response');
+    if (req.method === 'GET') {
+      return res.json(req.path.endsWith('s') || req.path.endsWith('s/') ? [] : {});
+    }
+    return res.status(503).json({ error: 'Service temporarily unavailable (database offline)' });
+  }
   console.error('[Unhandled Error]', err.stack || err.message);
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   res.status(statusCode).json({

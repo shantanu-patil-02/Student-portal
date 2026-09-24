@@ -47,8 +47,11 @@ export default function Register() {
       await register(cleanName, cleanEmail, password);
       navigate('/dashboard', { replace: true });
     } catch (err) {
+      console.error('[Registration Error]', err);
       const msg =
         err.response?.data?.message ||
+        err.response?.data?.error ||
+        err.message ||
         'Registration failed. Please check your information and try again.';
       setError(msg);
     } finally {

@@ -21,20 +21,23 @@ export const registerUser = async (req, res) => {
       return res.status(400).json({ message: 'Please fill in all fields: name, email, password' });
     }
 
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanName = (name || '').trim();
+
     if (password.length < 6) {
       return res.status(400).json({ message: 'Password must be at least 6 characters long' });
     }
 
     // Check if user already exists
-    const userExists = await User.findOne({ email: email.toLowerCase() });
+    const userExists = await User.findOne({ email: cleanEmail });
     if (userExists) {
       return res.status(400).json({ message: 'A student account with this email already exists' });
     }
 
     // Create user in MongoDB
     const user = await User.create({
-      name,
-      email,
+      name: cleanName,
+      email: cleanEmail,
       password,
     });
 
@@ -53,7 +56,10 @@ export const registerUser = async (req, res) => {
     }
   } catch (error) {
     console.error('[Register Error]', error.message);
-    return res.status(500).json({ message: error.message || 'Server error during registration' });
+    if (error.code === 11000) {
+      return res.status(400).json({ message: 'A student account with this email already exists' });
+    }
+    return res.status(400).json({ message: error.message || 'Server error during registration' });
   }
 };
 

@@ -1,9 +1,17 @@
 import axios from 'axios';
 
-// Resolve API URL: if VITE_API_URL is '.' or not starting with '/' or 'http', use '/api'
+// Resolve API URL: default to relative '/api' so it works seamlessly on any host/preview
 const getBaseApiUrl = () => {
   const envUrl = import.meta.env.VITE_API_URL;
-  if (!envUrl || envUrl === '.' || envUrl === './' || typeof envUrl !== 'string') {
+  if (
+    !envUrl ||
+    typeof envUrl !== 'string' ||
+    envUrl.includes('localhost') ||
+    envUrl.includes('127.0.0.1') ||
+    envUrl === '.' ||
+    envUrl === './' ||
+    envUrl === '/api'
+  ) {
     return '/api';
   }
   const trimmed = envUrl.trim();
