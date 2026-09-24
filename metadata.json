@@ -1,0 +1,6 @@
+{
+  "name": "Student Task & Assignment Manager",
+  "description": "A clean, modern MERN stack web application for students to organize, track, and manage academic tasks and assignments.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
