@@ -32,7 +32,9 @@ jobs:
         run: npm ci
 
       - name: Run automated tests
-        run: npm test -- --fail
+  run: |
+    npm test
+    exit 1
 
       - name: Build frontend
         run: npm run build
