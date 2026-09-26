@@ -16,17 +16,23 @@ console.log("MONGO_URI exists:", !!process.env.MONGO_URI);
 
 // Initialize Database Connection
 let initPromise = null;
+
 export const initDatabase = async () => {
   if (initPromise) {
     return initPromise;
   }
+
   initPromise = (async () => {
     await connectDB();
     await seedSampleData();
   })();
+
   return initPromise;
 };
-initDatabase();
+
+if (process.env.NODE_ENV !== 'test') {
+  initDatabase();
+}
 
 // Middleware
 app.use(cors());
