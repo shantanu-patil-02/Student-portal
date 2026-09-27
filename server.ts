@@ -20,10 +20,17 @@ async function startServer() {
 
   const app = express();
 
+  // HTTP request logging
+  app.use((req, res, next) => {
+    console.log(`[HTTP] ${req.method} ${req.originalUrl}`);
+    next();
+  });
+
   app.use(backendApp);
 
   if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.resolve(__dirname, 'dist')));
+
     app.get('*', (req, res) => {
       res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
     });
@@ -32,6 +39,7 @@ async function startServer() {
       server: { middlewareMode: true },
       appType: 'spa',
     });
+
     app.use(vite.middlewares);
   }
 

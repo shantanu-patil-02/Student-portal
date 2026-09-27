@@ -76,3 +76,4 @@ Devops pro
 └─ vite.config.ts
 
 ```
+CI/CD pipeline test
